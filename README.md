@@ -2,6 +2,17 @@
 
 Aplicación local para registrar reparaciones, preparar comprobantes y controlar entregas y cobros.
 
+## Abrir e instalar en el celular
+
+**[Abrir Taller M-T-G](https://braianruaimi.github.io/Taller-M-T-G/)**
+
+- **Android:** abrir el enlace en Chrome y elegir **Instalar aplicación** o **Agregar a pantalla principal** en el menú.
+- **iPhone:** abrir el enlace en Safari, tocar **Compartir** y luego **Agregar a pantalla de inicio**.
+
+Abrí la aplicación con conexión la primera vez. Después podrá iniciarse sin internet desde ese mismo navegador o instalación; la descarga inicial de actualizaciones requiere conexión. Para que el enlace funcione, GitHub Pages debe estar habilitado con **GitHub Actions** como fuente y el despliegue debe haber finalizado correctamente.
+
+**Importante:** los datos quedan en el dispositivo y no se sincronizan entre celulares. Cambiar de navegador, borrar sus datos o quitar la aplicación puede impedir recuperarlos. Exportá respaldos JSON con regularidad y no cargues datos sensibles en un dispositivo compartido.
+
 ## Iniciar
 
 Requiere Node.js 20.19+ o 22.12+ y npm.
