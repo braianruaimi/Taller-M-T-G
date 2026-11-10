@@ -1,5 +1,12 @@
 export type PaymentMethod = 'Efectivo' | 'Transferencia' | 'Tarjeta de crédito' | 'Tarjeta de débito'
 export const paymentMethods: PaymentMethod[] = ['Efectivo', 'Transferencia', 'Tarjeta de crédito', 'Tarjeta de débito']
+export type RepairStage = 'ingresado' | 'en_reparacion' | 'listo'
+export const repairStages: { value: RepairStage; label: string }[] = [
+  { value: 'ingresado', label: 'Ingresado' },
+  { value: 'en_reparacion', label: 'En reparación' },
+  { value: 'listo', label: 'Listo' },
+]
+export interface Payment { id: string; date: string; amount: number; method: PaymentMethod | '' }
 
 export interface VehicleOrder {
   id: string
@@ -18,6 +25,8 @@ export interface VehicleOrder {
   status: 'pending' | 'delivered'
   paidDate: string | null
   legacyPaid: number
+  repairStage?: RepairStage
+  payments?: Payment[]
 }
 
 export interface WorkshopData {
@@ -49,6 +58,21 @@ export function formatDate(date: string | null): string {
 export const formatMoney = (value: number): string =>
   new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(value)
 
+export const roundMoney = (amount: number): number => Math.round((amount + Number.EPSILON) * 100) / 100
+export function getPayments(order: VehicleOrder): Payment[] {
+  if (order.payments) return order.payments
+  if (order.status === 'delivered' && order.paidDate && order.price > order.legacyPaid) {
+    return [{ id: `migrado-${order.id}`, date: order.paidDate, amount: roundMoney(order.price - order.legacyPaid), method: order.paymentMethod }]
+  }
+  return []
+}
+export const paidTotal = (order: VehicleOrder): number => roundMoney(order.legacyPaid + getPayments(order).reduce((sum, payment) => sum + payment.amount, 0))
+export const balance = (order: VehicleOrder): number => Math.max(0, roundMoney(order.price - paidTotal(order)))
+export const normalizePlate = (plate: string): string => plate.toUpperCase().replace(/[^A-Z0-9]/g, '')
+export function orderPayments(orders: VehicleOrder[]) {
+  return orders.flatMap((order) => getPayments(order).map((payment) => ({ order, payment })))
+}
+
 function isOrder(value: unknown): value is VehicleOrder {
   if (!isRecord(value)) return false
   const fields = ['id', 'enteredBy', 'customer', 'dni', 'phone', 'brand', 'model', 'plate', 'repair']
@@ -60,6 +84,12 @@ function isOrder(value: unknown): value is VehicleOrder {
     && (value.paidDate === null || validDate(value.paidDate))
     && typeof value.legacyPaid === 'number' && Number.isFinite(value.legacyPaid) && value.legacyPaid >= 0 && value.legacyPaid <= value.price
     && (value.status !== 'pending' || value.paidDate === null)
+    && (value.repairStage === undefined || repairStages.some((stage) => stage.value === value.repairStage))
+    && (value.payments === undefined || (Array.isArray(value.payments) && value.payments.every((payment: unknown) =>
+      isRecord(payment) && isString(payment.id) && validDate(payment.date) && typeof payment.amount === 'number'
+      && Number.isFinite(payment.amount) && payment.amount > 0
+      && (payment.method === '' || paymentMethods.some((method) => method === payment.method))
+    ) && roundMoney(value.legacyPaid + value.payments.reduce((sum: number, payment: Payment) => sum + payment.amount, 0)) <= roundMoney(value.price)))
 }
 
 export function parseBackup(value: unknown): WorkshopData {

@@ -1,8 +1,8 @@
 import { jsPDF } from 'jspdf'
-import { formatDate, formatMoney } from './workshopModel'
+import { balance, formatDate, formatMoney, paidTotal } from './workshopModel'
 import type { VehicleOrder } from './workshopModel'
 
-export function downloadReceipt(order: VehicleOrder): void {
+export function createReceipt(order: VehicleOrder): jsPDF {
   const pdf = new jsPDF({ unit: 'mm', format: 'a4' })
   const left = 18
   let y = 22
@@ -44,11 +44,15 @@ export function downloadReceipt(order: VehicleOrder): void {
   row('Medio de pago:', order.paymentMethod)
   row('Estado:', order.status === 'delivered' ? 'Entregado y pagado' : 'Pendiente de entrega y pago')
   if (order.paidDate) row('Fecha de cobro:', formatDate(order.paidDate))
-  if (order.legacyPaid > 0) row('Pago previo registrado:', formatMoney(order.legacyPaid))
+  row('Total abonado:', formatMoney(paidTotal(order)))
+  row('Saldo pendiente:', formatMoney(balance(order)))
   y += 3
   if (y > 270) { pdf.addPage(); y = 20 }
   pdf.setFont('helvetica', 'bold')
   pdf.setFontSize(15)
   pdf.text(`Total: ${formatMoney(order.price)}`, left, y)
-  pdf.save(`Taller-MTG-${order.id}.pdf`)
+  return pdf
+}
+export function downloadReceipt(order: VehicleOrder): void {
+  createReceipt(order).save(`Taller-MTG-${order.id}.pdf`)
 }
