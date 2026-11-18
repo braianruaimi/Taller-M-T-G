@@ -27,8 +27,9 @@ Para comprobar la compilación de producción, ejecutar `npm run build`. Con `np
 ## Uso
 
 1. Seleccionar **Cargar vehículo** y completar los datos de quien carga, cliente, vehículo, reparación, fechas, precio y medio de pago.
+   En **Inicio** aparecen alertas de entregas vencidas, para hoy y para los próximos 3 días; **Avisar por WhatsApp** abre un mensaje preparado para revisar antes de enviarlo.
 2. Desde el registro o **A entregar**, editar el trabajo y descargar su comprobante en PDF.
-3. Cambiar el estado entre **Ingresado**, **En reparación** y **Listo**. Usar **Registrar pago** para cargar señas o pagos parciales con fecha y medio. Para confirmar **Entregado**, el saldo debe estar pagado; la entrega no crea pagos automáticamente.
+3. Seguir el avance visual de cada reparación y cambiar el estado entre **Ingresado**, **En reparación** y **Listo**. Usar **Registrar pago** para cargar señas o pagos parciales con fecha y medio. Para confirmar **Entregado**, el saldo debe estar pagado; la entrega no crea pagos automáticamente.
 4. En **Ingresos mensuales**, seleccionar mes, día y medio para consultar los pagos por su fecha real, aunque el vehículo todavía no se haya entregado.
 5. Buscar una patente al cargar un vehículo para reutilizar datos anteriores. El botón **Historial** muestra visitas vinculadas por patente o DNI, con sus reparaciones y pagos.
 6. Usar los botones de WhatsApp para enviar el presupuesto o avisar que el auto está listo. El teléfono debe incluir el código internacional, por ejemplo `54911...`. Para el PDF, seleccionar **Compartir PDF** y elegir WhatsApp; si el dispositivo no admite compartir archivos, descargarlo y adjuntarlo manualmente.
